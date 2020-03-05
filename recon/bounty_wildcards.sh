@@ -12,6 +12,7 @@ arg1="${1:-}"
 
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
+
 init() {
     if [ ! -d $HOME/.recon/ ]; then
         mkdir $HOME/.recon/
@@ -67,12 +68,20 @@ enum_wildcards() {
     cat ./amass/* >> subdomains.txt
 }
 
+resolve_dns() {
+    cd $HOME/.recon/current/
+
+    echo "[+] Resolving Subdomains"
+    cat ./subfinder/*.txt ./amass/*.txt | zdns -verbosity 1 > dns_records.txt
+}
+
 
 main() {
     init
     parse_h1
     parse_bugcrowd
     enum_wildcards
+    resolve_dns
 }
 
 main
